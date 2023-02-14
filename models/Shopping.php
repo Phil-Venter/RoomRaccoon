@@ -4,7 +4,8 @@ class Shopping extends Model
 {
 	public function all()
 	{
-		return $this->fetch("SELECT * FROM " . __CLASS__ . ";");
+		$this->prepare("SELECT * FROM " . __CLASS__ . ";");
+		return $this->execute();
 	}
 
 	public function save(array $data): int
