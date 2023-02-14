@@ -2,9 +2,11 @@
 
 require_once __DIR__ . '/../bootstrap.php';
 
-Router::get('/',          ['ShoppingConroller', 'index' ]);
-Router::post('/create',   ['ShoppingConroller', 'create']);
-Router::put('/put',       ['ShoppingConroller', 'put'   ]);
-Router::delete('/delete', ['ShoppingConroller', 'delete']);
+Router::get(   '/',       ['ShoppingController', 'index' ]);
+Router::post(  '/create', ['ShoppingController', 'create']);
+Router::put(   '/put',    ['ShoppingController', 'put'   ]);
+Router::delete('/delete', ['ShoppingController', 'delete']);
 
+echo '<pre>';
 echo Router::run(['ErrorController', 'error']);
+echo '</pre>';

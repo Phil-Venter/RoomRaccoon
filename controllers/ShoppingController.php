@@ -1,8 +1,9 @@
 <?php
 
-class ShoppingConroller
+class ShoppingController
 {
 	public static function index($req, $res) {
+		$shopping = (new Shopping())->all();
 		return $res->view('shopping', [
 			'name' => 'Philip'
 		]);

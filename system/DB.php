@@ -2,7 +2,7 @@
 
 class DB
 {
-	protected static ?DB $instance = null;
+	protected static ?PDO $instance = null;
 
 	protected static $default_driv = 'mysql';
 	protected static $default_host = 'localhost';
@@ -11,10 +11,10 @@ class DB
 	protected static $default_user = 'root';
 	protected static $default_pass = '';
 
-	public static function instance(array $options = []): DB
+	public static function instance(array $options = []): PDO
 	{
 		if (is_null(static::$instance)) {
-			static::$instance = new DB($options);
+			static::$instance = static::buildPDO($options);
 		}
 
 		return static::$instance;
@@ -29,7 +29,7 @@ class DB
 		);
 	}
 
-	protected function __construct(array $options)
+	protected static function buildPDO(array $options): PDO
 	{
 		$hasDriv = isset($options['driv']) && is_string($options['driv']) && mb_strlen(trim($options['driv'])) > 0;
 		$hasHost = isset($options['host']) && is_string($options['host']) && mb_strlen(trim($options['host'])) > 0;
@@ -51,6 +51,6 @@ class DB
 
 		$dsn = $options['driv'] . ':host=' . $options['host'] . ';port=' . $options['port'] . ';dbname=' . $options['name'];
 
-		$this->pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_PERSISTENT => true]);
+		return new PDO($dsn, $options['user'], $options['pass'], [PDO::ATTR_PERSISTENT => true]);
 	}
 }
