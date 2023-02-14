@@ -1,0 +1,5 @@
+.env
+.dockerignore
+config.php
+docker-compose.yml
+Dockerfile

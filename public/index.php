@@ -1,9 +1,10 @@
 <?php
 
-foreach (glob(__DIR__ . '/../system/*.php') as $file) { include_once $file; }
-foreach (glob(__DIR__ . '/../models/*.php') as $file) { include_once $file; }
-foreach (glob(__DIR__ . '/../controllers/*.php') as $file) { include_once $file; }
+require_once __DIR__ . '/../bootstrap.php';
 
-Router::get('/', ['Home', 'index']);
+Router::get('/',          ['ShoppingConroller', 'index' ]);
+Router::post('/create',   ['ShoppingConroller', 'create']);
+Router::put('/put',       ['ShoppingConroller', 'put'   ]);
+Router::delete('/delete', ['ShoppingConroller', 'delete']);
 
-Router::run(['Error', 'error']);
+echo Router::run(['ErrorController', 'error']);

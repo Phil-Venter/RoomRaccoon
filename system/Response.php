@@ -4,12 +4,11 @@ class Response
 {
 	protected int $code = 200;
 	protected array $header = [];
-	protected string $output = '';
+	protected ?Template $template = null;
 
-	public function redirect(string $url, int $status = 302): void
+	public function __construct($template)
 	{
-		header('Location: ' . str_replace(['&amp;', "\n", "\r"], ['&', '', ''], $url), true, $status);
-		exit();
+		$this->template = $template;
 	}
 
 	public function __get(string $key): mixed
@@ -34,12 +33,20 @@ class Response
 		}
 	}
 
-	public function __toString()
+	public function view(string $file, array $data = []): string
 	{
 		http_response_code($this->code);
 		foreach ($this->header as $header) {
 			header($header);
 		}
-		return $this->output;
+		return $this->template->build($file, $data);
+	}
+
+	public function redirect(string $url, int $status = 302): void
+	{
+		$_url = str_replace(['&amp;', "\n", "\r"], ['&', '', ''], $url);
+		$_status = preg_match('/^30[1237]$/', $status) > 0 ? $status : 301;
+		header('Location: ' . $_url, true, $_status);
+		exit();
 	}
 }

@@ -15,13 +15,13 @@ class Request
 
 	public function __get(string $name): array
 	{
-		if (!property_exists($this, $key)) {
+		if (!property_exists($this, $name)) {
 			return [];
 		}
-		return $this->{$key};
+		return $this->{$name};
 	}
 
-	public function setArgs(): void
+	public function setArgs(array $args = []): void
 	{
 		$this->args = $this->clean($args);
 	}

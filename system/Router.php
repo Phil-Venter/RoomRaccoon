@@ -3,6 +3,14 @@
 class Router
 {
 	protected static array $routes = [];
+	protected static ?Request $request = null;
+	protected static ?Response $response = null;
+
+	public static function init(Request $request, Response $response)
+	{
+		static::$request = $request;
+		static::$response = $response;
+	}
 
 	public static function __callStatic($method, $args): void
 	{
@@ -24,33 +32,39 @@ class Router
 
 		$_route = '/^' . str_replace('/', '\/', trim(preg_replace('/\+/', '/', $route), '/')) . '$/';
 
-		static::$routes[$_route][$method] = $callable;
+		static::$routes[$_route][strtoupper($method)] = $callable;
 	}
 
 	public static function run($error): mixed
 	{
 		$request_uri = explode('?', trim(rawurldecode($_SERVER['REQUEST_URI']), '/'))[0];
-		$request_method = $_SERVER['REQUEST_METHOD'];
-
-		$request = new Request();
-		$response = new Response();
+		$request_method = strtoupper($_SERVER['REQUEST_METHOD']);
 
 		foreach (static::$routes as $route => $method_callable) {
 			if (preg_match($route, $request_uri, $params)) {
 				if (array_key_exists($request_method, $method_callable)) {
 					array_shift($params);
-					$request->setArgs($params);
-					return call_user_func_array($method_callable[$request_method], [$request, $response]);
+					static::$request->setArgs($params);
+					return (string)call_user_func_array($method_callable[$request_method], [
+						static::$request,
+						static::$response
+					]);
 				} else {
-					$request->setArgs(['error' => 403]);
+					static::$request->setArgs(['error' => 403]);
 					$response->code = 403;
-					return call_user_func_array($error, [$request, $response]);
+					return (string)call_user_func_array($error, [
+						static::$request,
+						static::$response
+					]);
 				}
 			}
 		}
 
-		$request->setArgs(['error' => 403]);
-		$response->code = 404;
-		return call_user_func_array($error, [$request, $response]);
+		static::$request->setArgs(['error' => 403]);
+		static::$response->code = 404;
+		return (string)call_user_func_array($error, [
+			static::$request,
+			static::$response
+		]);
 	}
 }
